@@ -1,6 +1,6 @@
 from typing import List
 from joblib import Parallel, delayed
-from request import Request
+from lib.request import Request
 
 
 class Naver:
@@ -52,7 +52,7 @@ class Naver:
                 if '/odai/' in href and text and href != '/odai/new':
                     links.append(self.BASE_URL + href)
 
-                """ページング"""
+                """ページ数を取得する"""
                 if len(page_list) == 0 and href == '#' and 'goPage' in a.get('onclick'):
                     page_list.append(int(text))
 
@@ -70,22 +70,23 @@ class Naver:
         max_page_num = 50
         current_page = 1
 
-        result = Parallel(n_jobs=5, backend='threading', verbose=0)([
+        results = Parallel(n_jobs=5, backend='threading', verbose=0)([
             delayed(self.__get_link_in_category)(current_page, path, max_page_num) for path in nav_list
         ])
 
         """メモリ解放"""
         del nav_list
 
-        for link in result:
+        for link in results:
             links.extend(link)
 
-        del result
+        """メモリ解放"""
+        del results
 
         return list(set(links))
 
     @staticmethod
-    def get_detail_list(link: str) -> List:
+    def get_detail_list(link: str, callback) -> None:
         detail_list = []
         """url ごとにテキストを詰める"""
         text_array = []
@@ -123,4 +124,4 @@ class Naver:
         detail['content'] = text_array
         detail_list.append(detail)
 
-        return detail_list
+        callback(detail_list)

@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 from scraping import Scraping
 from datetime import datetime
-from analyze import Analyze
+from lib.analyze import Analyze
+from joblib import Parallel, delayed
 
 
 def main():
-    enable_providers = [
+    providers = [
         'naver',
     ]
 
     """スクレイピングした内容をテーブルに保存する"""
-    for provider in enable_providers:
-        Scraping.run(Scraping(), provider)
+    Parallel(n_jobs=5, verbose=0)([
+        delayed(Scraping.run)(Scraping(), provider) for provider in providers
+    ])
 
     """スクレイピング結果から名詞をテーブルに保存する"""
     Analyze.save_words(Analyze())

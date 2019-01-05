@@ -1,11 +1,14 @@
 from typing import List
 from database import DB
 from datetime import datetime
-from naver import Naver
+from lib.scraping.naver import Naver
 from joblib import Parallel, delayed
 
 
 class Scraping:
+    """スクレイピング結果をテーブルに格納する"""
+
+    """スクレイピングを開始"""
     def run(self, target: str):
         print('start scraping...')
 
@@ -19,16 +22,12 @@ class Scraping:
 
     """詳細を取得する"""
     def __save_page_detail(self, links: List, provider) -> None:
-        results = Parallel(n_jobs=5, backend='threading', verbose=0)([
-            delayed(provider.get_detail_list)(link) for link in links
+        Parallel(n_jobs=5, backend='threading', verbose=0)([
+            delayed(provider.get_detail_list)(link, self.save) for link in links
         ])
-
-        for detail_list in results:
-            self.save(detail_list)
 
         """メモリ解放"""
         del links
-        del results
 
     """保存する"""
     @staticmethod
