@@ -12,6 +12,28 @@ class Naver:
     def get_link(self) -> List:
         return self.__get_link()
 
+    """リンクを取得する"""
+    def __get_link(self) -> List:
+        links = []
+        nav_list = self.__get_category_list()
+        max_page_num = 50
+        current_page = 1
+
+        results = Parallel(n_jobs=5, backend='threading', verbose=0)([
+            delayed(self.__get_link_in_category)(current_page, path, max_page_num) for path in nav_list
+        ])
+
+        """メモリ解放"""
+        del nav_list
+
+        for link in results:
+            links.extend(link)
+
+        """メモリ解放"""
+        del results
+
+        return list(set(links))
+
     """カテゴリーリストを取得する"""
     def __get_category_list(self) -> List:
         """一旦カテゴリーリストを取得する"""
@@ -63,28 +85,6 @@ class Naver:
 
         return links
 
-    """リンクを取得する"""
-    def __get_link(self) -> List:
-        links = []
-        nav_list = self.__get_category_list()
-        max_page_num = 50
-        current_page = 1
-
-        results = Parallel(n_jobs=5, backend='threading', verbose=0)([
-            delayed(self.__get_link_in_category)(current_page, path, max_page_num) for path in nav_list
-        ])
-
-        """メモリ解放"""
-        del nav_list
-
-        for link in results:
-            links.extend(link)
-
-        """メモリ解放"""
-        del results
-
-        return list(set(links))
-
     @staticmethod
     def get_detail_list(link: str, callback) -> None:
         detail_list = []
@@ -100,14 +100,15 @@ class Naver:
 
             html = Request.exec(request_path)
             contents = html.select(
-                '.mdMTMWidget01ItemTweet01View, .mdMTMWidget01Content01Txt, .mdMTMWidget01ItemQuote01Txt'
+                '.mdMTMWidget01ItemTweet01View,.mdMTMWidget01Content01Txt,'
+                '.mdMTMWidget01ItemQuote01Txt,.mdMTMWidget01ItemComment01View,'
+                '.mdMTMWidget01ItemDesc01View'
             )
 
             for content in contents:
-                if content.string:
-                    text_array.append(content.string)
-                else:
-                    text_array.append(content.get_text(strip=True).strip())
+                text = content.get_text(strip=True)
+                if text:
+                    text_array.append(text)
 
             page_element = html.select('.MdPagination03 a')
             page_list = []
