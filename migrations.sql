@@ -1,0 +1,21 @@
+-- スクレイピングデータ格納用テーブル
+CREATE TABLE scraping.scraping (
+	url VARCHAR(255) NOT NULL COMMENT '抽出元URL',
+	content LONGTEXT NOT NULL COMMENT '内容',
+	create_date DATE NOT NULL COMMENT '作成日',
+  update_date DATE NOT NULL COMMENT '更新日',
+	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '作成日時',
+	updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新日時',
+	PRIMARY KEY(`url`),
+	KEY(`create_date`),
+	KEY(`update_date`)
+) DEFAULT CHARSET=utf8mb4;
+
+-- キーワード格納用テーブル
+CREATE TABLE scraping.keywords (
+  id BIGINT NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  name VARCHAR(190) NOT NULL COMMENT 'キーワード',
+	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '作成日時',
+	PRIMARY KEY(`id`),
+	KEY(`name`)
+) DEFAULT CHARSET=utf8mb4;
