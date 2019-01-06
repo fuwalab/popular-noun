@@ -12,8 +12,11 @@ class Naver:
     def get_link(self) -> List:
         return self.__get_link()
 
-    """リンクを取得する"""
     def __get_link(self) -> List:
+        """
+        リンクを取得する
+        :return: URLリスト
+        """
         links = []
         nav_list = self.__get_category_list()
         max_page_num = 50
@@ -34,8 +37,12 @@ class Naver:
 
         return list(set(links))
 
-    """カテゴリーリストを取得する"""
     def __get_category_list(self) -> List:
+        """
+        カテゴリーリストを取得する
+        :return: カテゴリーのURLリスト
+        """
+
         """一旦カテゴリーリストを取得する"""
         nav_list = []
         soup = Request.exec(self.BASE_URL)
@@ -51,8 +58,14 @@ class Naver:
 
         return nav_list
 
-    """カテゴリーごとのリンクを取得する"""
     def __get_link_in_category(self, current_page: int, path: str, max_page_num: int = 50) -> List:
+        """
+        カテゴリーページ内にあるリンクを取得する
+        :param current_page: 現在のページ番号
+        :param path: URL
+        :param max_page_num: 最大ページ番号
+        :return: カテゴリーページ内にあるURLリスト
+        """
         links = []
         page_list = []  # type: List[int]
 
@@ -99,6 +112,7 @@ class Naver:
             request_path = link + '?page=' + str(current_page)
 
             html = Request.exec(request_path)
+            """取得対象のセレクタ"""
             contents = html.select(
                 '.mdMTMWidget01ItemTweet01View,.mdMTMWidget01Content01Txt,'
                 '.mdMTMWidget01ItemQuote01Txt,.mdMTMWidget01ItemComment01View,'

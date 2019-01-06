@@ -3,13 +3,20 @@ import MeCab
 from database import DB
 from datetime import datetime
 from typing import List
+import collections
 
 
 class Analyze:
-    """ update_date が本日のものだけ保存する"""
+    """
+    形態素解析して名詞を保存する
+    """
+
+    """名詞を保存する"""
     def save_words(self):
         print('start save_words...')
         conn = DB.conn()
+
+        """今日スクレイピングしたデータのみが対象"""
         query = 'SELECT content FROM scraping WHERE `update_date` = %s'
         current_date = datetime.today().strftime('%Y-%m-%d')
 
@@ -24,11 +31,22 @@ class Analyze:
 
         cursor.close()
         conn.close()
+
+        del rows
         print('done save_words')
 
-    """形態素解析して名詞のリストを返す"""
     @staticmethod
     def __analyze(text: str) -> List:
+        """
+        形態素解析して名詞のリストを返す
+        :param text: テキスト
+        :return: 名詞のリスト
+        """
+
+        """
+        mecab の辞書に以下を使う
+        https://github.com/neologd/mecab-ipadic-neologd/blob/master/README.ja.md
+        """
         tagger = MeCab.Tagger('-d /usr/local/lib/mecab/dic/mecab-ipadic-neologd')
         tagger.parse('')
         node = tagger.parseToNode(text)
@@ -43,22 +61,37 @@ class Analyze:
 
         return words
 
-    """保存する"""
     @staticmethod
     def __save(keywords: List):
+        """
+        保存する
+        :param keywords: 名詞のリスト
+        """
         keyword_list = []
 
-        for keyword in keywords:
-            keyword_list.append([keyword])
+        """
+        キーに要素、値に重複数をもつ辞書型サブクラスを返す
+        Counter({'名詞1': 10, '名詞2': 5, '名詞3': 1})
+        """
+        words = collections.Counter(keywords)
+        current_date = datetime.today().strftime('%Y-%m-%d')
+
+        for word in words:
+            keyword_list.append([word, words[word], current_date])
 
         conn = DB.conn()
-        query = 'INSERT INTO keywords (`name`) VALUES (%s)'
+        """同名の `name` があったときに数を加算していく"""
+        query = 'INSERT INTO keywords (`name`, `num`, `create_date`) VALUES (%s, %s, %s) ' \
+                'ON DUPLICATE KEY UPDATE `num` = `num` + VALUES(`num`)'
 
         cursor = conn.cursor()
 
         try:
             cursor.executemany(query, keyword_list)
             conn.commit()
+
+            del keyword_list
+            del words
         except Exception as e:
             conn.rollback()
             raise e

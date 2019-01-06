@@ -13,9 +13,10 @@ CREATE TABLE scraping.scraping (
 
 -- キーワード格納用テーブル
 CREATE TABLE scraping.keywords (
-  id BIGINT NOT NULL AUTO_INCREMENT COMMENT 'ID',
   name VARCHAR(190) NOT NULL COMMENT 'キーワード',
+  num INT(11) NOT NULL COMMENT 'カウント',
+	create_date DATE NOT NULL COMMENT '作成日',
 	created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '作成日時',
-	PRIMARY KEY(`id`),
-	KEY(`name`)
+	updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新日時',
+	UNIQUE (`name`, `create_date`)
 ) DEFAULT CHARSET=utf8mb4;

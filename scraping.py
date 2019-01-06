@@ -6,7 +6,9 @@ from joblib import Parallel, delayed
 
 
 class Scraping:
-    """スクレイピング結果をテーブルに格納する"""
+    """
+    スクレイピング結果をテーブルに格納する
+    """
 
     """スクレイピングを開始"""
     def run(self, target: str):
@@ -20,8 +22,13 @@ class Scraping:
 
         print('done scraping')
 
-    """詳細を取得する"""
     def __save_page_detail(self, links: List, provider) -> None:
+        """
+        詳細を取得する
+        :param links: URLリスト
+        :param provider: 取得元サイト
+        :return: None
+        """
         Parallel(n_jobs=5, backend='threading', verbose=0)([
             delayed(provider.get_detail_list)(link, self.save) for link in links
         ])
@@ -29,9 +36,12 @@ class Scraping:
         """メモリ解放"""
         del links
 
-    """保存する"""
     @staticmethod
     def save(detail_list: List):
+        """
+        保存する
+        :param detail_list: テキストリスト
+        """
         conn = DB.conn()
         query = 'INSERT INTO scraping (`url`, `content`, `create_date`, `update_date`) VALUES (%s, %s, %s, %s) ' \
                 'ON DUPLICATE KEY UPDATE `content` = VALUES (`content`), `update_date` = VALUES (`update_date`)'
