@@ -29,3 +29,20 @@ MySQL 5.7 以上
     $ ./bin/install-mecab-ipadic-neologd -n
     ```
     - 詳細は[こちら](https://github.com/neologd/mecab-ipadic-neologd/blob/master/README.ja.md)
+
+- マイグレーション
+    ```
+    $ echo 'create database scraping;' | mysql -uroot -p
+    $ mysql -uroot -p < migrations.sql
+    ```
+    - [DDL](https://github.com/fuwalab/popular-noun/blob/master/migrations.sql)
+## 実行方法
+```
+$ ./main.py
+```
+
+## データ
+- スクレイピングデータ
+    - `scraping.scraping`
+- 形態素解析データ
+    - `scraping.keywords`
