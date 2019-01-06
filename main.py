@@ -11,7 +11,7 @@ def main():
     ]
 
     """スクレイピングした内容をテーブルに保存する"""
-    Parallel(n_jobs=5, verbose=0)([
+    Parallel(n_jobs=1, verbose=0)([
         delayed(Scraping.run)(Scraping(), provider) for provider in providers
     ])
 
