@@ -11,16 +11,21 @@ MySQL 5.7 以上
 ```
 
 ## 事前準備
-
 - Mecab のインストール
     ```
     $ brew install macab
     ```
+    
+- swig のインストール
+    ```
+    $ brew install swig
+    ```
 
-- mecab-python3 のインストール
+- 必要パッケージのインストール
     ```
-    $ pip install mecab-python3
+    $ pip install mysql-connector-python joblib beautifulsoup4 mecab-python3==0.7
     ```
+    - ※最新版だと parseToNode に不具合があるため古いバージョンを指定
 
 - mecab-ipadic-neologd のインストール
     ```

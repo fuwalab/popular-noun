@@ -11,9 +11,11 @@ def main():
     ]
 
     """スクレイピングした内容をテーブルに保存する"""
-    Parallel(n_jobs=1, verbose=0)([
-        delayed(Scraping.run)(Scraping(), provider) for provider in providers
-    ])
+    # Parallel(n_jobs=1, verbose=0)([
+    #     delayed(Scraping.run)(Scraping(), provider) for provider in providers
+    # ])
+
+    Scraping.run(Scraping(), 'naver')
 
     """スクレイピング結果から名詞をテーブルに保存する"""
     Analyze.save_words(Analyze())
