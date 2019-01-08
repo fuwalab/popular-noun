@@ -1,6 +1,6 @@
 -- スクレイピングデータ格納用テーブル
 CREATE TABLE scraping.scraping (
-	url VARCHAR(255) NOT NULL COMMENT '抽出元URL',
+	url VARCHAR(190) NOT NULL COMMENT '抽出元URL',
 	content LONGTEXT NOT NULL COMMENT '内容',
 	create_date DATE NOT NULL COMMENT '作成日',
   update_date DATE NOT NULL COMMENT '更新日',
